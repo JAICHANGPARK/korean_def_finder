@@ -36,7 +36,20 @@ dependencies:
   cupertino_icons: ^1.0.4
   permission_handler: ^8.3.0
   location: ^4.3.0
+  http: any
+
+  freezed_annotation: any
+  json_annotation: ^4.3.0
+  flutter_map: any
+
+  intl: ^0.17.0
+  latlong2: ^0.8.1
+
+
 dev_dependencies:
+  freezed: ^1.0.0
+  json_serializable: any
+  build_runner : any
   flutter_test:
     sdk: flutter
 
