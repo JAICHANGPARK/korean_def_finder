@@ -1,5 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+
+import 'src/model/remote_def.dart';
+import 'src/remote/remote_api.dart';
 
 final Location location = Location();
 
@@ -10,18 +17,15 @@ void main() {
 PermissionStatus? _permissionGranted;
 
 Future<PermissionStatus?> checkPermissions() async {
-  final PermissionStatus permissionGrantedResult =
-  await location.hasPermission();
+  final PermissionStatus permissionGrantedResult = await location.hasPermission();
   return permissionGrantedResult;
 }
 
 Future<void> requestPermission() async {
   if (_permissionGranted != PermissionStatus.granted) {
-    final PermissionStatus permissionRequestedResult =
-    await location.requestPermission();
+    final PermissionStatus permissionRequestedResult = await location.requestPermission();
   }
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -42,7 +46,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-
   final String title;
 
   @override
@@ -51,16 +54,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  StreamSubscription? locationStreamSubscription;
+  LocationData? _locationData;
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    locationStreamSubscription?.cancel();
+    super.dispose();
+  }
+
+  MapController _mapController = MapController();
+  List<DefItem> remoteItems = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    locationStreamSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
+      // Use current location
+      setState(() {
+        _locationData = currentLocation;
+        print("[_locationData] ${_locationData}");
+      });
+    });
 
-    checkPermissions().then((value) async{
-      if(value != PermissionStatus.granted) {
+    checkPermissions().then((value) async {
+      if (value != PermissionStatus.granted) {
         await requestPermission();
         bool _serviceEnabled = await location.serviceEnabled();
         if (!_serviceEnabled) {
@@ -69,61 +90,91 @@ class _MyHomePageState extends State<MyHomePage> {
             return;
           }
         }
-
-
       }
+      _locationData = await location.getLocation();
+      print(_locationData);
+      _mapController.move(
+        LatLng(_locationData?.latitude ?? 37.5360317, _locationData?.longitude ?? 127.06399),
+        14,
+      );
+      setState(() {});
+    });
+    getRemoteData().then((value) {
+      var result = value?.data ?? [];
+      if (remoteItems.isNotEmpty) remoteItems.clear();
+      remoteItems = result;
+      for (var item in remoteItems) {
+        if (item.lat != null && item.lang != null) {
+          markerItems.add(
+            Marker(
+                height: 36,
+                width: 36,
+                point: LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                builder: (ctx) => CircleAvatar(
+                      backgroundColor: Colors.purpleAccent,
+                      child: Text("${item.stock}",style: TextStyle(
+                        fontSize: 10
+                      ),),
+                    )),
+          );
+        }
+      }
+      setState(() {});
     });
   }
 
+  List<Marker> markerItems = [];
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
-            ),
+            Positioned(
+                child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                center: LatLng(
+                  _locationData?.latitude ?? 37.5360317,
+                  _locationData?.longitude ?? 127.06399,
+                ),
+                zoom: 14.0,
+              ),
+              layers: [
+                TileLayerOptions(
+                  urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c'],
+                  attributionBuilder: (_) {
+                    return const Text("© OpenStreetMap contributors");
+                  },
+                ),
+                MarkerLayerOptions(
+                  markers: [
+                    Marker(
+                        width: 18.0,
+                        height: 18.0,
+                        point: LatLng(
+                          _locationData?.latitude ?? 37.5360317,
+                          _locationData?.longitude ?? 127.06399,
+                        ),
+                        builder: (ctx) => const CircleAvatar(
+                              radius: 8,
+                              backgroundColor: Colors.blueAccent,
+                            )),
+                    ...markerItems
+                  ],
+                ),
+              ],
+            ))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
