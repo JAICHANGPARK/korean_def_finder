@@ -1,6 +1,6 @@
 # korean_def_finder
 
-A new Flutter project.
+- 요소수 검색을 위한 애플리케이션
 
 ## Getting Started
 
