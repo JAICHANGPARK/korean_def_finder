@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   MapController _mapController = MapController();
   List<DefItem> remoteItems = [];
   List<Marker> markerItems = [];
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -94,9 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       _locationData = await location.getLocation();
       print(_locationData);
+      zoomValue = 14;
       _mapController.move(
         LatLng(_locationData?.latitude ?? 37.5360317, _locationData?.longitude ?? 127.06399),
-        14,
+        zoomValue,
       );
       setState(() {});
     });
@@ -104,7 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
       var result = value?.data ?? [];
       if (remoteItems.isNotEmpty) remoteItems.clear();
       remoteItems = result;
-      for (var item in remoteItems) {
+      for (int i = 0; i < remoteItems.length; i++) {
+        var item = remoteItems[i];
         if (item.lat != null && item.lang != null) {
           markerItems.add(
             Marker(
@@ -113,10 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 point: LatLng(double.parse(item.lat!), double.parse(item.lang!)),
                 builder: (ctx) => GestureDetector(
                       onTap: () {
-                        print("MarkerTap");
+                        zoomValue = 14;
                         _mapController.move(
                           LatLng(double.parse(item.lat!), double.parse(item.lang!)),
-                          12,
+                          zoomValue,
                         );
                         setState(() {});
                       },
@@ -131,9 +134,15 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         }
       }
+      // for (var item in remoteItems) {
+      //
+      // }
       setState(() {});
     });
   }
+
+  double zoomValue = 14.0;
+  MapPosition? _currentMapPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -149,12 +158,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: FlutterMap(
                   mapController: _mapController,
                   options: MapOptions(
-                    center: LatLng(
-                      _locationData?.latitude ?? 37.5360317,
-                      _locationData?.longitude ?? 127.06399,
-                    ),
-                    zoom: 14.0,
-                  ),
+                      onPositionChanged: (position, hasGesture) {
+                        _currentMapPosition = position;
+                      },
+                      center: LatLng(
+                        _locationData?.latitude ?? 37.5360317,
+                        _locationData?.longitude ?? 127.06399,
+                      ),
+                      zoom: zoomValue),
                   layers: [
                     TileLayerOptions(
                       urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -187,14 +198,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 right: 0,
                 child: remoteItems.isNotEmpty
                     ? SizedBox(
-                        height: 200,
+                        height: 180,
                         child: ListView.builder(
                             itemCount: remoteItems.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
                               var item = remoteItems[index];
                               return SizedBox(
-                                width: 360,
+                                width: 320,
                                 child: Card(
                                   elevation: 4,
                                   child: Padding(
@@ -249,20 +260,47 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             const Spacer(),
                                             IconButton(
+                                                onPressed: () {
+                                                  zoomValue = 14;
+                                                  _mapController.move(
+                                                    LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                                                    zoomValue,
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Coolicons.location_outline,
+                                                )),
+                                            IconButton(
                                                 onPressed: () {},
                                                 icon: const Icon(
                                                   Coolicons.share_outline,
                                                 ))
                                           ],
                                         ),
-
                                         Padding(
                                           padding: const EdgeInsets.symmetric(vertical: 4),
-                                          child: Text("${item.name}"),
+                                          child: Text(
+                                            "${item.name}",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
                                         ),
-                                        Text("${item.address}"),
-                                        Text("${item.phone}"),
-                                        Text("${item.date}"),
+                                        SelectableText(
+                                          "${item.address}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        SelectableText(
+                                          "${item.phone} / ${item.businessTime}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text("기준일: ${item.date}"),
                                       ],
                                     ),
                                   ),
@@ -279,9 +317,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
                 onPressed: () {
+                  zoomValue = 14;
                   _mapController.move(
                     LatLng(_locationData?.latitude ?? 37.5360317, _locationData?.longitude ?? 127.06399),
-                    12,
+                    zoomValue,
                   );
                   setState(() {});
                 },
@@ -299,7 +338,43 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {},
                   label: const Text("설정"),
                   icon: const Icon(Coolicons.settings_future),
-                ))
+                )),
+            Positioned(
+              right: 24,
+              bottom: 220,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                width: 42,
+                child: Column(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          print(zoomValue);
+                          if (_currentMapPosition != null) {
+                            zoomValue++;
+                            _mapController.move(_currentMapPosition!.center!, zoomValue);
+                          }
+                        },
+                        icon: const Icon(Icons.add)),
+                    const Divider(),
+                    IconButton(
+                        onPressed: () {
+                          if (_currentMapPosition != null) {
+                            if (zoomValue < 1) {
+                              zoomValue = 1;
+                            }
+                            zoomValue--;
+                            _mapController.move(_currentMapPosition!.center!, zoomValue);
+                          }
+                        },
+                        icon: const Icon(Icons.remove)),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
