@@ -44,6 +44,7 @@ dependencies:
 
   intl: ^0.17.0
   latlong2: ^0.8.1
+  coolicons: ^1.0.0
 
 
 dev_dependencies:
