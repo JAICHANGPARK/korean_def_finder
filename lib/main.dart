@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coolicons/coolicons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -34,18 +35,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '요소수',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: ''),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -66,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   MapController _mapController = MapController();
   List<DefItem> remoteItems = [];
+  List<Marker> markerItems = [];
 
   @override
   void initState() {
@@ -110,11 +111,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 36,
                 width: 36,
                 point: LatLng(double.parse(item.lat!), double.parse(item.lang!)),
-                builder: (ctx) => CircleAvatar(
-                      backgroundColor: Colors.purpleAccent,
-                      child: Text("${item.stock}",style: TextStyle(
-                        fontSize: 10
-                      ),),
+                builder: (ctx) => GestureDetector(
+                      onTap: () {
+                        print("MarkerTap");
+                        _mapController.move(
+                          LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                          12,
+                        );
+                        setState(() {});
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.purpleAccent,
+                        child: Text(
+                          "${item.stock}",
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ),
                     )),
           );
         }
@@ -123,61 +135,174 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<Marker> markerItems = [];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
+      body: SafeArea(
         child: Stack(
           children: <Widget>[
             Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: 0,
                 child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                center: LatLng(
-                  _locationData?.latitude ?? 37.5360317,
-                  _locationData?.longitude ?? 127.06399,
-                ),
-                zoom: 14.0,
-              ),
-              layers: [
-                TileLayerOptions(
-                  urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
-                  attributionBuilder: (_) {
-                    return const Text("© OpenStreetMap contributors");
-                  },
-                ),
-                MarkerLayerOptions(
-                  markers: [
-                    Marker(
-                        width: 18.0,
-                        height: 18.0,
-                        point: LatLng(
-                          _locationData?.latitude ?? 37.5360317,
-                          _locationData?.longitude ?? 127.06399,
-                        ),
-                        builder: (ctx) => const CircleAvatar(
-                              radius: 8,
-                              backgroundColor: Colors.blueAccent,
-                            )),
-                    ...markerItems
+                  mapController: _mapController,
+                  options: MapOptions(
+                    center: LatLng(
+                      _locationData?.latitude ?? 37.5360317,
+                      _locationData?.longitude ?? 127.06399,
+                    ),
+                    zoom: 14.0,
+                  ),
+                  layers: [
+                    TileLayerOptions(
+                      urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      subdomains: ['a', 'b', 'c'],
+                      attributionBuilder: (_) {
+                        return const Text("© OpenStreetMap contributors");
+                      },
+                    ),
+                    MarkerLayerOptions(
+                      markers: [
+                        Marker(
+                            width: 18.0,
+                            height: 18.0,
+                            point: LatLng(
+                              _locationData?.latitude ?? 37.5360317,
+                              _locationData?.longitude ?? 127.06399,
+                            ),
+                            builder: (ctx) => const CircleAvatar(
+                                  radius: 8,
+                                  backgroundColor: Colors.blueAccent,
+                                )),
+                        ...markerItems
+                      ],
+                    ),
                   ],
-                ),
-              ],
-            ))
+                )),
+            Positioned(
+                left: 16,
+                bottom: 16,
+                right: 0,
+                child: remoteItems.isNotEmpty
+                    ? SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                            itemCount: remoteItems.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              var item = remoteItems[index];
+                              return SizedBox(
+                                width: 360,
+                                child: Card(
+                                  elevation: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "입고량",
+                                                    style: TextStyle(fontSize: 12),
+                                                  ),
+                                                  Text(
+                                                    "${item.input}",
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 16,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "재고량",
+                                                    style: TextStyle(fontSize: 12),
+                                                  ),
+                                                  Text(
+                                                    "${item.input}",
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            IconButton(
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                  Coolicons.share_outline,
+                                                ))
+                                          ],
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4),
+                                          child: Text("${item.name}"),
+                                        ),
+                                        Text("${item.address}"),
+                                        Text("${item.phone}"),
+                                        Text("${item.date}"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                      )
+                    : const SizedBox.shrink()),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: FloatingActionButton(
+                heroTag: "my_location",
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                onPressed: () {
+                  _mapController.move(
+                    LatLng(_locationData?.latitude ?? 37.5360317, _locationData?.longitude ?? 127.06399),
+                    12,
+                  );
+                  setState(() {});
+                },
+                tooltip: 'Location',
+                child: const Icon(Icons.flutter_dash),
+              ),
+            ),
+            Positioned(
+                top: 16,
+                left: 16,
+                child: FloatingActionButton.extended(
+                  tooltip: "setting",
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  onPressed: () {},
+                  label: const Text("설정"),
+                  icon: const Icon(Coolicons.settings_future),
+                ))
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
