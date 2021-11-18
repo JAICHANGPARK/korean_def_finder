@@ -1,5 +1,7 @@
 # korean_def_finder
 
+## 사이드프로젝트
+
 - 요소수 검색을 위한 애플리케이션
 
 ## Getting Started
