@@ -124,10 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {});
                       },
                       child: CircleAvatar(
-                        backgroundColor: Colors.purpleAccent,
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
                         child: Text(
                           "${item.stock}",
-                          style: const TextStyle(fontSize: 10),
+                          style: const TextStyle(fontSize: 11,),
                         ),
                       ),
                     )),
