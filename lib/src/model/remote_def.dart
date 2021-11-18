@@ -15,6 +15,7 @@ class DefItem with _$DefItem {
     @JsonKey(name: "위도") String? lat, //위도
     @JsonKey(name: "경도") String? lang, // 경도
     @JsonKey(name: "데이터기준일") String? date,
+    @JsonKey(name: "영업시간") String? businessTime,
   }) = _DefItem;
   factory DefItem.fromJson(Map<String, dynamic> json) => _$DefItemFromJson(json);
 }

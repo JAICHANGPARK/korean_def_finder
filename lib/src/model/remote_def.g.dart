@@ -15,6 +15,7 @@ _$_DefItem _$$_DefItemFromJson(Map<String, dynamic> json) => _$_DefItem(
       lat: json['위도'] as String?,
       lang: json['경도'] as String?,
       date: json['데이터기준일'] as String?,
+      businessTime: json['영업시간'] as String?,
     );
 
 Map<String, dynamic> _$$_DefItemToJson(_$_DefItem instance) =>
@@ -27,6 +28,7 @@ Map<String, dynamic> _$$_DefItemToJson(_$_DefItem instance) =>
       '위도': instance.lat,
       '경도': instance.lang,
       '데이터기준일': instance.date,
+      '영업시간': instance.businessTime,
     };
 
 _$_RemoteDef _$$_RemoteDefFromJson(Map<String, dynamic> json) => _$_RemoteDef(

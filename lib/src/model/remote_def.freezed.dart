@@ -29,7 +29,8 @@ class _$DefItemTearOff {
       @JsonKey(name: "재고량") String? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
-      @JsonKey(name: "데이터기준일") String? date}) {
+      @JsonKey(name: "데이터기준일") String? date,
+      @JsonKey(name: "영업시간") String? businessTime}) {
     return _DefItem(
       name: name,
       address: address,
@@ -39,6 +40,7 @@ class _$DefItemTearOff {
       lat: lat,
       lang: lang,
       date: date,
+      businessTime: businessTime,
     );
   }
 
@@ -68,6 +70,8 @@ mixin _$DefItem {
   String? get lang => throw _privateConstructorUsedError; // 경도
   @JsonKey(name: "데이터기준일")
   String? get date => throw _privateConstructorUsedError;
+  @JsonKey(name: "영업시간")
+  String? get businessTime => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -86,7 +90,8 @@ abstract class $DefItemCopyWith<$Res> {
       @JsonKey(name: "재고량") String? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
-      @JsonKey(name: "데이터기준일") String? date});
+      @JsonKey(name: "데이터기준일") String? date,
+      @JsonKey(name: "영업시간") String? businessTime});
 }
 
 /// @nodoc
@@ -107,6 +112,7 @@ class _$DefItemCopyWithImpl<$Res> implements $DefItemCopyWith<$Res> {
     Object? lat = freezed,
     Object? lang = freezed,
     Object? date = freezed,
+    Object? businessTime = freezed,
   }) {
     return _then(_value.copyWith(
       name: name == freezed
@@ -141,6 +147,10 @@ class _$DefItemCopyWithImpl<$Res> implements $DefItemCopyWith<$Res> {
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as String?,
+      businessTime: businessTime == freezed
+          ? _value.businessTime
+          : businessTime // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -158,7 +168,8 @@ abstract class _$DefItemCopyWith<$Res> implements $DefItemCopyWith<$Res> {
       @JsonKey(name: "재고량") String? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
-      @JsonKey(name: "데이터기준일") String? date});
+      @JsonKey(name: "데이터기준일") String? date,
+      @JsonKey(name: "영업시간") String? businessTime});
 }
 
 /// @nodoc
@@ -180,6 +191,7 @@ class __$DefItemCopyWithImpl<$Res> extends _$DefItemCopyWithImpl<$Res>
     Object? lat = freezed,
     Object? lang = freezed,
     Object? date = freezed,
+    Object? businessTime = freezed,
   }) {
     return _then(_DefItem(
       name: name == freezed
@@ -214,6 +226,10 @@ class __$DefItemCopyWithImpl<$Res> extends _$DefItemCopyWithImpl<$Res>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as String?,
+      businessTime: businessTime == freezed
+          ? _value.businessTime
+          : businessTime // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -229,7 +245,8 @@ class _$_DefItem implements _DefItem {
       @JsonKey(name: "재고량") this.stock,
       @JsonKey(name: "위도") this.lat,
       @JsonKey(name: "경도") this.lang,
-      @JsonKey(name: "데이터기준일") this.date});
+      @JsonKey(name: "데이터기준일") this.date,
+      @JsonKey(name: "영업시간") this.businessTime});
 
   factory _$_DefItem.fromJson(Map<String, dynamic> json) =>
       _$$_DefItemFromJson(json);
@@ -258,10 +275,13 @@ class _$_DefItem implements _DefItem {
   @override // 경도
   @JsonKey(name: "데이터기준일")
   final String? date;
+  @override
+  @JsonKey(name: "영업시간")
+  final String? businessTime;
 
   @override
   String toString() {
-    return 'DefItem(name: $name, address: $address, phone: $phone, input: $input, stock: $stock, lat: $lat, lang: $lang, date: $date)';
+    return 'DefItem(name: $name, address: $address, phone: $phone, input: $input, stock: $stock, lat: $lat, lang: $lang, date: $date, businessTime: $businessTime)';
   }
 
   @override
@@ -276,12 +296,14 @@ class _$_DefItem implements _DefItem {
             (identical(other.stock, stock) || other.stock == stock) &&
             (identical(other.lat, lat) || other.lat == lat) &&
             (identical(other.lang, lang) || other.lang == lang) &&
-            (identical(other.date, date) || other.date == date));
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.businessTime, businessTime) ||
+                other.businessTime == businessTime));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, name, address, phone, input, stock, lat, lang, date);
+  int get hashCode => Object.hash(runtimeType, name, address, phone, input,
+      stock, lat, lang, date, businessTime);
 
   @JsonKey(ignore: true)
   @override
@@ -303,7 +325,8 @@ abstract class _DefItem implements DefItem {
       @JsonKey(name: "재고량") String? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
-      @JsonKey(name: "데이터기준일") String? date}) = _$_DefItem;
+      @JsonKey(name: "데이터기준일") String? date,
+      @JsonKey(name: "영업시간") String? businessTime}) = _$_DefItem;
 
   factory _DefItem.fromJson(Map<String, dynamic> json) = _$_DefItem.fromJson;
 
@@ -331,6 +354,9 @@ abstract class _DefItem implements DefItem {
   @override // 경도
   @JsonKey(name: "데이터기준일")
   String? get date;
+  @override
+  @JsonKey(name: "영업시간")
+  String? get businessTime;
   @override
   @JsonKey(ignore: true)
   _$DefItemCopyWith<_DefItem> get copyWith =>
