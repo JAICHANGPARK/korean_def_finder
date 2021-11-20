@@ -11,7 +11,7 @@ _$_DefItem _$$_DefItemFromJson(Map<String, dynamic> json) => _$_DefItem(
       address: json['주소'] as String?,
       phone: json['전화번호'] as String?,
       input: json['입고량'] as String?,
-      stock: json['재고량'] as String?,
+      stock: json['재고량'] as int?,
       lat: json['위도'] as String?,
       lang: json['경도'] as String?,
       date: json['데이터기준일'] as String?,

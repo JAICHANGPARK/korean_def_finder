@@ -5,16 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'src/model/remote_def.dart';
 import 'src/remote/remote_api.dart';
+import 'src/ui/setting_screen.dart';
+import 'src/ui/splash_screen.dart';
 
 final Location location = Location();
-
-void main() {
-  runApp(const MyApp());
-}
-
 PermissionStatus? _permissionGranted;
 
 Future<PermissionStatus?> checkPermissions() async {
@@ -28,18 +26,25 @@ Future<void> requestPermission() async {
   }
 }
 
+void main() {
+  runApp(const MyApp());
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '요소수',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: ''),
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      // ),
+      darkTheme: ThemeData.dark(),
+      theme: ThemeData.light(),
+      debugShowCheckedModeBanner: false,
+      home: const SplashScreen(),
+      // home: const MyHomePage(title: ''),
     );
   }
 }
@@ -57,17 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription? locationStreamSubscription;
   LocationData? _locationData;
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    locationStreamSubscription?.cancel();
-    super.dispose();
-  }
-
-  MapController _mapController = MapController();
+  double zoomValue = 14.0;
+  MapPosition? _currentMapPosition;
+  final MapController _mapController = MapController();
+  final ScrollController _scrollController = ScrollController();
   List<DefItem> remoteItems = [];
   List<Marker> markerItems = [];
-  ScrollController _scrollController = ScrollController();
+  PageController _pageController = PageController(viewportFraction: 0.8);
 
   @override
   void initState() {
@@ -78,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Use current location
       setState(() {
         _locationData = currentLocation;
-        print("[_locationData] ${_locationData}");
+        print("[_locationData] $_locationData");
       });
     });
 
@@ -121,6 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           LatLng(double.parse(item.lat!), double.parse(item.lang!)),
                           zoomValue,
                         );
+                        _pageController.animateToPage(i,
+                            duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
                         setState(() {});
                       },
                       child: CircleAvatar(
@@ -128,7 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         foregroundColor: Colors.white,
                         child: Text(
                           "${item.stock}",
-                          style: const TextStyle(fontSize: 11,),
+                          style: const TextStyle(
+                            fontSize: 11,
+                          ),
                         ),
                       ),
                     )),
@@ -142,8 +147,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  double zoomValue = 14.0;
-  MapPosition? _currentMapPosition;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    locationStreamSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,13 +203,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 )),
             Positioned(
-                left: 16,
+                left: 0,
                 bottom: 16,
                 right: 0,
                 child: remoteItems.isNotEmpty
                     ? SizedBox(
                         height: 180,
-                        child: ListView.builder(
+                        child: PageView.builder(
+                            controller: _pageController,
                             itemCount: remoteItems.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
@@ -216,32 +226,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                       children: [
                                         Row(
                                           children: [
+                                            // Container(
+                                            //   decoration: BoxDecoration(
+                                            //     border: Border.all(color: Colors.black),
+                                            //     borderRadius: BorderRadius.circular(4),
+                                            //   ),
+                                            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                            //   child: Column(
+                                            //     crossAxisAlignment: CrossAxisAlignment.start,
+                                            //     children: [
+                                            //       const Text(
+                                            //         "입고량",
+                                            //         style: TextStyle(fontSize: 12),
+                                            //       ),
+                                            //       Text(
+                                            //         item.input ?? "0",
+                                            //         style: const TextStyle(fontSize: 16),
+                                            //       ),
+                                            //     ],
+                                            //   ),
+                                            // ),
+                                            // const SizedBox(
+                                            //   width: 16,
+                                            // ),
                                             Container(
                                               decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.black),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    "입고량",
-                                                    style: TextStyle(fontSize: 12),
-                                                  ),
-                                                  Text(
-                                                    "${item.input}",
-                                                    style: const TextStyle(fontSize: 16),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 16,
-                                            ),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.black),
+                                                border: Border.all(color: Colors.grey),
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
                                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -253,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     style: TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
-                                                    "${item.input}",
+                                                    "${item.stock ?? "0"}",
                                                     style: const TextStyle(fontSize: 16),
                                                   ),
                                                 ],
@@ -272,7 +282,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   Coolicons.location_outline,
                                                 )),
                                             IconButton(
-                                                onPressed: () {},
+                                                onPressed: () async {
+                                                  Share.share(
+                                                      '${item.name}(${item.address}) ${item.phone} 잔여: ${item.stock ?? 0} 입고: ${item.input ?? 0}');
+                                                },
                                                 icon: const Icon(
                                                   Coolicons.share_outline,
                                                 ))
@@ -336,7 +349,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   tooltip: "setting",
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SettingScreen(),
+                      ),
+                    );
+                  },
                   label: const Text("설정"),
                   icon: const Icon(Coolicons.settings_future),
                 )),
@@ -345,7 +364,7 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: 220,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 width: 42,

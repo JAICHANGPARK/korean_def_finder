@@ -26,7 +26,7 @@ class _$DefItemTearOff {
       @JsonKey(name: "주소") String? address,
       @JsonKey(name: "전화번호") String? phone,
       @JsonKey(name: "입고량") String? input,
-      @JsonKey(name: "재고량") String? stock,
+      @JsonKey(name: "재고량") int? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
       @JsonKey(name: "데이터기준일") String? date,
@@ -63,7 +63,7 @@ mixin _$DefItem {
   @JsonKey(name: "입고량")
   String? get input => throw _privateConstructorUsedError;
   @JsonKey(name: "재고량")
-  String? get stock => throw _privateConstructorUsedError;
+  int? get stock => throw _privateConstructorUsedError;
   @JsonKey(name: "위도")
   String? get lat => throw _privateConstructorUsedError; //위도
   @JsonKey(name: "경도")
@@ -87,7 +87,7 @@ abstract class $DefItemCopyWith<$Res> {
       @JsonKey(name: "주소") String? address,
       @JsonKey(name: "전화번호") String? phone,
       @JsonKey(name: "입고량") String? input,
-      @JsonKey(name: "재고량") String? stock,
+      @JsonKey(name: "재고량") int? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
       @JsonKey(name: "데이터기준일") String? date,
@@ -134,7 +134,7 @@ class _$DefItemCopyWithImpl<$Res> implements $DefItemCopyWith<$Res> {
       stock: stock == freezed
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
       lat: lat == freezed
           ? _value.lat
           : lat // ignore: cast_nullable_to_non_nullable
@@ -165,7 +165,7 @@ abstract class _$DefItemCopyWith<$Res> implements $DefItemCopyWith<$Res> {
       @JsonKey(name: "주소") String? address,
       @JsonKey(name: "전화번호") String? phone,
       @JsonKey(name: "입고량") String? input,
-      @JsonKey(name: "재고량") String? stock,
+      @JsonKey(name: "재고량") int? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
       @JsonKey(name: "데이터기준일") String? date,
@@ -213,7 +213,7 @@ class __$DefItemCopyWithImpl<$Res> extends _$DefItemCopyWithImpl<$Res>
       stock: stock == freezed
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
       lat: lat == freezed
           ? _value.lat
           : lat // ignore: cast_nullable_to_non_nullable
@@ -265,7 +265,7 @@ class _$_DefItem implements _DefItem {
   final String? input;
   @override
   @JsonKey(name: "재고량")
-  final String? stock;
+  final int? stock;
   @override
   @JsonKey(name: "위도")
   final String? lat;
@@ -322,7 +322,7 @@ abstract class _DefItem implements DefItem {
       @JsonKey(name: "주소") String? address,
       @JsonKey(name: "전화번호") String? phone,
       @JsonKey(name: "입고량") String? input,
-      @JsonKey(name: "재고량") String? stock,
+      @JsonKey(name: "재고량") int? stock,
       @JsonKey(name: "위도") String? lat,
       @JsonKey(name: "경도") String? lang,
       @JsonKey(name: "데이터기준일") String? date,
@@ -344,7 +344,7 @@ abstract class _DefItem implements DefItem {
   String? get input;
   @override
   @JsonKey(name: "재고량")
-  String? get stock;
+  int? get stock;
   @override
   @JsonKey(name: "위도")
   String? get lat;

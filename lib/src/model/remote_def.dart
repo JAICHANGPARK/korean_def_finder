@@ -11,7 +11,7 @@ class DefItem with _$DefItem {
     @JsonKey(name: "주소") String? address,
     @JsonKey(name: "전화번호") String? phone,
     @JsonKey(name: "입고량") String? input,
-    @JsonKey(name: "재고량") String? stock,
+    @JsonKey(name: "재고량") int? stock,
     @JsonKey(name: "위도") String? lat, //위도
     @JsonKey(name: "경도") String? lang, // 경도
     @JsonKey(name: "데이터기준일") String? date,
