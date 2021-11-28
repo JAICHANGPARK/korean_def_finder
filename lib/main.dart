@@ -285,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             IconButton(
                                                 onPressed: () async {
                                                   Share.share(
-                                                      '${item.name}(${item.addr}) ${item.tel} 잔여: ${item.inventory ?? 0} 입고: ${item.input ?? 0}');
+                                                      '${item.name}(${item.addr}) ${item.tel} 잔여: ${item.inventory ?? 0} 가격: ${item.price ?? 0}');
                                                 },
                                                 icon: const Icon(
                                                   Coolicons.share_outline,
