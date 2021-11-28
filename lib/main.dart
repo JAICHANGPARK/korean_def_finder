@@ -8,6 +8,7 @@ import 'package:location/location.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'src/model/remote_def.dart';
+import 'src/model/remote_def_v2.dart';
 import 'src/remote/remote_api.dart';
 import 'src/ui/setting_screen.dart';
 import 'src/ui/splash_screen.dart';
@@ -66,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   MapPosition? _currentMapPosition;
   final MapController _mapController = MapController();
   final ScrollController _scrollController = ScrollController();
-  List<DefItem> remoteItems = [];
+  List<DefItem2> remoteItems = [];
   List<Marker> markerItems = [];
   PageController _pageController = PageController(viewportFraction: 0.8);
 
@@ -103,23 +104,23 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       setState(() {});
     });
-    getRemoteData().then((value) {
+    getRemoteBetaData().then((value) {
       var result = value?.data ?? [];
       if (remoteItems.isNotEmpty) remoteItems.clear();
       remoteItems = result;
       for (int i = 0; i < remoteItems.length; i++) {
         var item = remoteItems[i];
-        if (item.lat != null && item.lang != null) {
+        if (item.lat != null && item.lng != null) {
           markerItems.add(
             Marker(
                 height: 36,
                 width: 36,
-                point: LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                point: LatLng(double.parse(item.lat!), double.parse(item.lng!)),
                 builder: (ctx) => GestureDetector(
                       onTap: () {
                         zoomValue = 14;
                         _mapController.move(
-                          LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                          LatLng(double.parse(item.lat!), double.parse(item.lng!)),
                           zoomValue,
                         );
                         _pageController.animateToPage(i,
@@ -130,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         backgroundColor: Colors.purple,
                         foregroundColor: Colors.white,
                         child: Text(
-                          "${item.stock}",
+                          "${item.inventory}",
                           style: const TextStyle(
                             fontSize: 11,
                           ),
@@ -263,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     style: TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
-                                                    "${item.stock ?? "0"}",
+                                                    "${item.inventory ?? "0"}",
                                                     style: const TextStyle(fontSize: 16),
                                                   ),
                                                 ],
@@ -274,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 onPressed: () {
                                                   zoomValue = 14;
                                                   _mapController.move(
-                                                    LatLng(double.parse(item.lat!), double.parse(item.lang!)),
+                                                    LatLng(double.parse(item.lat!), double.parse(item.lng!)),
                                                     zoomValue,
                                                   );
                                                 },
@@ -284,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             IconButton(
                                                 onPressed: () async {
                                                   Share.share(
-                                                      '${item.name}(${item.address}) ${item.phone} 잔여: ${item.stock ?? 0} 입고: ${item.input ?? 0}');
+                                                      '${item.name}(${item.addr}) ${item.tel} 잔여: ${item.inventory ?? 0} 입고: ${item.input ?? 0}');
                                                 },
                                                 icon: const Icon(
                                                   Coolicons.share_outline,
@@ -302,19 +303,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                         ),
                                         SelectableText(
-                                          "${item.address}",
+                                          "${item.addr}",
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),
                                         ),
                                         SelectableText(
-                                          "${item.phone} / ${item.businessTime}",
+                                          "${item.tel} / ${item.openTime}",
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),
                                         ),
                                         const Spacer(),
-                                        Text("기준일: ${item.date}"),
+                                        Text("기준일: ${item.regDt}"),
                                       ],
                                     ),
                                   ),

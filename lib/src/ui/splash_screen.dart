@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Center(child: Text('제공되는 정보는 다소 차이가 있을수 있습니다.'))),
+                  child: Center(child: Text('제공되는 정보는 실제 재고 현황과 일부 차이가 있을 수 있습니다'))),
             ],
           ),
         ),
