@@ -148,17 +148,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Color convertInventoryColor(String? color){
-    if(color == "GREEN"){
+  Color convertInventoryColor(String? color) {
+    if (color == "GREEN") {
       return Colors.green;
-    }
-    else if(color == "YELLOW"){
+    } else if (color == "YELLOW") {
       return Colors.orange;
-    }
-    else if(color == "GRAY"){
+    } else if (color == "GRAY") {
       return Colors.grey[400]!;
-    }
-    else{
+    } else {
       return Colors.grey[400]!;
     }
   }
@@ -224,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 right: 0,
                 child: remoteItems.isNotEmpty
                     ? SizedBox(
-                        height: 180,
+                        height: 200,
                         child: PageView.builder(
                             controller: _pageController,
                             itemCount: remoteItems.length,
@@ -285,7 +282,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(width: 8,),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
                                             Container(
                                               decoration: BoxDecoration(
                                                 border: Border.all(color: Colors.grey),
@@ -398,7 +397,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             Positioned(
               right: 24,
-              bottom: 220,
+              bottom: remoteItems.isNotEmpty ? 240 : 24,
               child: Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
@@ -431,7 +430,69 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-            )
+            ),
+            Positioned(
+              left: 24,
+              bottom: remoteItems.isNotEmpty ? 240 : 24,
+              child: FloatingActionButton(
+                heroTag: "refresh",
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                onPressed: () {
+                  if (remoteItems.isNotEmpty) {
+                    // debugPrint("item Clear");
+                    remoteItems.clear();
+                    setState(() {});
+                  }
+                  getRemoteBetaData().then((value) {
+                    var result = value?.data ?? [];
+                    if (remoteItems.isNotEmpty) {
+                      remoteItems.clear();
+                    }
+                    remoteItems = result;
+                    for (int i = 0; i < remoteItems.length; i++) {
+                      var item = remoteItems[i];
+                      if (item.lat != null && item.lng != null) {
+                        markerItems.add(
+                          Marker(
+                              height: 36,
+                              width: 36,
+                              point: LatLng(double.parse(item.lat!), double.parse(item.lng!)),
+                              builder: (ctx) => GestureDetector(
+                                    onTap: () {
+                                      zoomValue = 14;
+                                      _mapController.move(
+                                        LatLng(double.parse(item.lat!), double.parse(item.lng!)),
+                                        zoomValue,
+                                      );
+                                      _pageController.animateToPage(i,
+                                          duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
+                                      setState(() {});
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundColor: convertInventoryColor(item.color),
+                                      foregroundColor: Colors.white,
+                                      child: Text(
+                                        "${item.inventory}",
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                        );
+                      }
+                    }
+                    // for (var item in remoteItems) {
+                    //
+                    // }
+                    setState(() {});
+                  });
+                },
+                tooltip: 'Refresh',
+                child: const Icon(Icons.refresh),
+              ),
+            ),
           ],
         ),
       ),
