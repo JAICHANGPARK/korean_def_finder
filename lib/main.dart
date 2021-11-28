@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {});
                       },
                       child: CircleAvatar(
-                        backgroundColor: Colors.purple,
+                        backgroundColor: convertInventoryColor(item.color),
                         foregroundColor: Colors.white,
                         child: Text(
                           "${item.inventory}",
@@ -146,6 +146,21 @@ class _MyHomePageState extends State<MyHomePage> {
       // }
       setState(() {});
     });
+  }
+
+  Color convertInventoryColor(String? color){
+    if(color == "GREEN"){
+      return Colors.green;
+    }
+    else if(color == "YELLOW"){
+      return Colors.orange;
+    }
+    else if(color == "GRAY"){
+      return Colors.grey[400]!;
+    }
+    else{
+      return Colors.grey[400]!;
+    }
   }
 
   @override
@@ -255,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 border: Border.all(color: Colors.grey),
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
@@ -265,6 +280,27 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   ),
                                                   Text(
                                                     "${item.inventory ?? "0"}",
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 8,),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.grey),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "가격",
+                                                    style: TextStyle(fontSize: 12),
+                                                  ),
+                                                  Text(
+                                                    "${item.price ?? "0"}",
                                                     style: const TextStyle(fontSize: 16),
                                                   ),
                                                 ],
